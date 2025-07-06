@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل خوارزميات 2025 | تحليل استراتيجي لـ IEATD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Calm Scholar -->
+    <!-- Application Structure Plan: تم تصميم التطبيق كلوحة تحكم تفاعلية من صفحة واحدة بدلاً من عرض التقرير الخطي. الهدف هو تمكين المستخدم من الوصول السريع للمعلومات التي تهمه. يتكون الهيكل من: 1) شريط تنقل علوي للقفز بين الأقسام الرئيسية (الرئيسية، أسس الخوارزميات، تحليل المنصات، استراتيجية IEATD، المستقبل). 2) قسم رئيسي يعرض المحتوى بشكل تفاعلي (بطاقات، رسوم بيانية، فلاتر). تم اختيار هذا الهيكل لتسهيل المقارنة بين المنصات، وربط الاستراتيجية مباشرة بشخصيات المتعلمين، مما يجعل استيعاب التقرير أكثر كفاءة وجاذبية. -->
+    <!-- Visualization & Content Choices: 
+        - Goal: Inform/Engage -> Method: Dynamic text cards for key findings & recommendations. Interaction: Hover effects.
+        - Goal: Compare -> Method: Interactive Radar Chart (Chart.js) to compare platform algorithm signals. Interaction: Clicking a platform logo updates the chart and text, providing instant visual comparison. Justification: A radar chart is superior to a static table for comparing multiple entities across multiple variables.
+        - Goal: Organize/Relate -> Method: Clickable persona cards and content pillar filters. Interaction: Clicking a persona filters the recommended strategies, directly linking audience to action. Justification: This interactive filtering makes the complex strategy section highly usable and task-oriented for a marketer.
+        - Library/Method: Vanilla JS for all logic, Chart.js for visualization.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #FDFBF7; /* Warm Off-white */
+            color: #3D4451;
+        }
+        .main-nav-link {
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .main-nav-link.active, .main-nav-link:hover {
+            color: #D68F58; /* Warm Accent */
+            border-bottom-color: #D68F58;
+        }
+        .platform-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(66, 153, 225, 0.5);
+            border-color: #4A90E2;
+        }
+        .persona-card.active-persona {
+            box-shadow: 0 10px 20px rgba(74, 144, 226, 0.2);
+            transform: translateY(-5px);
+            border-color: #4A90E2;
+        }
+        .content-hidden {
+            display: none;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FDFBF7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D68F58;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-bold text-[#2A364E]">دليل خوارزميات 2025 التفاعلي</h1>
+            <p class="text-lg text-gray-600 mt-2">تحليل استراتيجي وتطبيقي لأكاديمية النخبة الدولية للتدريب والتنمية (IEATD)</p>
+        </header>
+
+        <nav class="bg-white/70 backdrop-blur-md sticky top-4 z-50 rounded-full shadow-lg mb-10 p-2 max-w-2xl mx-auto">
+            <ul class="flex items-center justify-center space-x-4 sm:space-x-8">
+                <li><a href="#home" class="main-nav-link active font-semibold p-2" data-section="home">الرئيسية</a></li>
+                <li><a href="#foundations" class="main-nav-link font-semibold p-2" data-section="foundations">أسس الخوارزميات</a></li>
+                <li><a href="#platforms" class="main-nav-link font-semibold p-2" data-section="platforms">تحليل المنصات</a></li>
+                <li><a href="#strategy" class="main-nav-link font-semibold p-2" data-section="strategy">استراتيجية IEATD</a></li>
+                <li><a href="#future" class="main-nav-link font-semibold p-2" data-section="future">المستقبل</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Section: Home -->
+            <section id="home" class="app-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-[#2A364E] mb-4">فك شفرة الخوارزميات لتعزيز النمو</h2>
+                    <p class="max-w-3xl mx-auto text-gray-700 leading-relaxed">
+                        في المشهد الرقمي المعاصر، لم يعد فهم آليات عمل خوارزميات وسائل التواصل الاجتماعي ترفًا تقنيًا، بل أصبح ضرورة استراتيجية حتمية. هذا الدليل التفاعلي يحلل المبادئ الحاكمة للمنصات الكبرى ويقدم استراتيجية تطبيقية مفصلة لمساعدة أكاديمية النخبة الدولية على تحقيق أهدافها.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-6 rounded-xl shadow-md transition-transform hover:scale-105">
+                        <h3 class="text-2xl font-bold text-[#4A90E2]">بناء القيمة والمجتمع</h3>
+                        <p class="mt-2 text-gray-600">التحول من استراتيجية "الإعلان" إلى استراتيجية "بناء القيمة"، وتقديم محتوى تعليمي حقيقي يبني الثقة ويؤسس لمجتمع متفاعل.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md transition-transform hover:scale-105">
+                        <h3 class="text-2xl font-bold text-[#4A90E2]">تمكين الخبراء الداخليين</h3>
+                        <p class="mt-2 text-gray-600">الاستفادة من خبرات المدربين والمحاضرين عبر تشجيعهم على النشر من حساباتهم الشخصية، خاصة على لينكدإن، لزيادة مدى الوصول.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md transition-transform hover:scale-105">
+                        <h3 class="text-2xl font-bold text-[#4A90E2]">الاستثمار في الفيديو القصير</h3>
+                        <p class="mt-2 text-gray-600">جعل محتوى الفيديو القصير (Reels/Shorts) أداة أساسية في التسويق لتقديم نصائح سريعة والوصول إلى شرائح جمهور جديدة.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Foundations -->
+            <section id="foundations" class="app-section content-hidden">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-[#2A364E] mb-4">إشارات التصنيف العالمية</h2>
+                    <p class="max-w-3xl mx-auto text-gray-700 leading-relaxed">
+                        على الرغم من اختلاف كل منصة، إلا أن هناك مجموعة من "الإشارات" الرئيسية التي تفهمها معظم الخوارزميات لتقييم المحتوى. فهم هذه الإشارات هو الخطوة الأولى لبناء استراتيجية ناجحة.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl mb-3 text-[#D68F58]">🤝</div>
+                        <h3 class="text-xl font-bold mb-2">العلاقة (Relationship)</h3>
+                        <p class="text-gray-600">الأولوية للمحتوى من الحسابات التي تتفاعل معها باستمرار. الخوارزمية تقيس قوة العلاقة عبر الرسائل والتعليقات المتبادلة.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl mb-3 text-[#D68F58]">❤️</div>
+                        <h3 class="text-xl font-bold mb-2">التفاعل (Engagement)</h3>
+                        <p class="text-gray-600">التعليقات الطويلة، المشاركات، وعمليات الحفظ تحمل وزنًا أكبر بكثير من الإعجابات. الجودة أهم من الكمية.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl mb-3 text-[#D68F58]">🎯</div>
+                        <h3 class="text-xl font-bold mb-2">الملاءمة (Relevance)</h3>
+                        <p class="text-gray-600">تحليل سلوكك السابق لتقديم محتوى يتوافق مع اهتماماتك الشخصية، حتى من حسابات لا تتابعها.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-3xl mb-3 text-[#D68F58]">⏱️</div>
+                        <h3 class="text-xl font-bold mb-2">الحداثة (Recency)</h3>
+                        <p class="text-gray-600">لا يزال للمنشورات الجديدة أفضلية، خاصة في الساعات الأولى، لاختبار أدائها الأولي مع الجمهور.</p>
+                    </div>
+                </div>
+                 <div class="mt-12 bg-red-50 border-r-4 border-red-500 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold text-red-800 mb-2">⚠️ الجانب المظلم للخوارزميات</h3>
+                    <p class="text-red-700">يجب الانتباه إلى التحديات الأخلاقية مثل "فقاعات الترشيح" التي تعزل المستخدمين فكريًا، ومخاوف "الخصوصية" المتعلقة بجمع البيانات، ومشكلة "التحيز الخوارزمي" التي قد تكرس عدم المساواة المجتمعية.</p>
+                </div>
+            </section>
+
+            <!-- Section: Platforms -->
+            <section id="platforms" class="app-section content-hidden">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-[#2A364E] mb-4">مقارنة خوارزميات المنصات (تحديث 2025)</h2>
+                    <p class="max-w-3xl mx-auto text-gray-700 leading-relaxed">
+                        كل منصة هي نظام بيئي من الخوارزميات. اضغط على شعار منصة لعرض تحليلها المفصل ومقارنة إشارات التصنيف الرئيسية بشكل مرئي.
+                    </p>
+                </div>
+
+                <div class="flex justify-center items-center flex-wrap gap-4 mb-8">
+                    <button class="platform-btn p-2 rounded-full border-2 border-transparent transition-all duration-300 active" data-platform="instagram">
+                        <img src="https://placehold.co/60x60/E4405F/white?text=IG" alt="Instagram" class="rounded-full">
+                    </button>
+                    <button class="platform-btn p-2 rounded-full border-2 border-transparent transition-all duration-300" data-platform="facebook">
+                        <img src="https://placehold.co/60x60/1877F2/white?text=FB" alt="Facebook" class="rounded-full">
+                    </button>
+                    <button class="platform-btn p-2 rounded-full border-2 border-transparent transition-all duration-300" data-platform="tiktok">
+                        <img src="https://placehold.co/60x60/000000/white?text=TT" alt="TikTok" class="rounded-full">
+                    </button>
+                    <button class="platform-btn p-2 rounded-full border-2 border-transparent transition-all duration-300" data-platform="youtube">
+                        <img src="https://placehold.co/60x60/FF0000/white?text=YT" alt="YouTube" class="rounded-full">
+                    </button>
+                    <button class="platform-btn p-2 rounded-full border-2 border-transparent transition-all duration-300" data-platform="linkedin">
+                        <img src="https://placehold.co/60x60/0A66C2/white?text=LI" alt="LinkedIn" class="rounded-full">
+                    </button>
+                     <button class="platform-btn p-2 rounded-full border-2 border-transparent transition-all duration-300" data-platform="x">
+                        <img src="https://placehold.co/60x60/1DA1F2/white?text=X" alt="X" class="rounded-full">
+                    </button>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-8 items-center">
+                    <div id="platform-details" class="bg-white p-6 rounded-xl shadow-lg">
+                        <!-- Platform details will be injected here by JS -->
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="chart-container">
+                             <canvas id="platform-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section: Strategy -->
+            <section id="strategy" class="app-section content-hidden">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-[#2A364E] mb-4">استراتيجية محتوى مخصصة لـ IEATD</h2>
+                    <p class="max-w-3xl mx-auto text-gray-700 leading-relaxed">
+                        استكشف الاستراتيجية المقترحة. انقر على "شخصية متعلم" لرؤية التوصيات الأكثر ملاءمة لها وكيف تتقاطع مع أعمدة المحتوى المختلفة.
+                    </p>
+                </div>
+                
+                <h3 class="text-2xl font-semibold text-center mb-6">1. اختر شخصية المتعلم</h3>
+                <div class="grid md:grid-cols-3 gap-6 mb-12">
+                     <div id="persona-noura" class="persona-card bg-white p-6 rounded-xl shadow-md border-2 border-transparent cursor-pointer transition-all">
+                        <h4 class="text-xl font-bold text-[#4A90E2]">نورة المديرة الطموحة</h4>
+                        <p class="text-gray-600 mt-2">مديرة موارد بشرية (35 عامًا)، تبحث عن برامج معتمدة لتطوير فريقها. تقضي وقتها على **لينكدإن**.</p>
+                    </div>
+                    <div id="persona-ahmed" class="persona-card bg-white p-6 rounded-xl shadow-md border-2 border-transparent cursor-pointer transition-all">
+                        <h4 class="text-xl font-bold text-[#50E3C2]">أحمد المدرب المستقل</h4>
+                        <p class="text-gray-600 mt-2">مدرب حياة (28 عامًا)، يسعى لبناء علامته التجارية. نشط جدًا على **إنستغرام وتيك توك**.</p>
+                    </div>
+                    <div id="persona-sara" class="persona-card bg-white p-6 rounded-xl shadow-md border-2 border-transparent cursor-pointer transition-all">
+                        <h4 class="text-xl font-bold text-[#D68F58]">سارة الباحثة عن الذات</h4>
+                        <p class="text-gray-600 mt-2">خريجة حديثة (24 عامًا)، تبحث عن مهارات حياتية. تقضي وقتها على **يوتيوب وفيسبوك**.</p>
+                    </div>
+                </div>
+                
+                <h3 class="text-2xl font-semibold text-center mb-6">2. استراتيجيات المحتوى المقترحة</h3>
+                <div id="strategy-content" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Strategy content will be injected and filtered by JS -->
+                </div>
+            </section>
+
+            <!-- Section: Future -->
+            <section id="future" class="app-section content-hidden">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-[#2A364E] mb-4">مستقبل الخوارزميات والتعليم الرقمي</h2>
+                    <p class="max-w-3xl mx-auto text-gray-700 leading-relaxed">
+                        النجاح المستدام يعتمد على تبني التوجهات المستقبلية التي تشكل عالم التعليم الرقمي.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-lg transform hover:-translate-y-2 transition-transform">
+                        <h3 class="text-xl font-bold text-[#4A90E2] mb-3">التخصيص الفائق (Hyper-Personalization)</h3>
+                        <p class="text-gray-600">تصميم مسارات تعليمية فريدة لكل متعلم بناءً على أدائه وسرعة استيعابه، وتكييف المواد التعليمية في الوقت الفعلي.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg transform hover:-translate-y-2 transition-transform">
+                        <h3 class="text-xl font-bold text-[#50E3C2] mb-3">الذكاء الاصطناعي التوليدي (Generative AI)</h3>
+                        <p class="text-gray-600">استخدام أدوات مثل ChatGPT وMidjourney لتسريع عملية إنشاء المحتوى التعليمي والتسويقي، من صياغة النصوص إلى تصميم الصور.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg transform hover:-translate-y-2 transition-transform">
+                        <h3 class="text-xl font-bold text-[#D68F58] mb-3">التعلم الاجتماعي وبناء المجتمع</h3>
+                        <p class="text-gray-600">الاستثمار في خلق مجتمعات تعلم نشطة ومزدهرة حيث يتبادل المتعلمون الخبرات، مما يعزز الولاء ويخلق محتوى أصيلاً.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const data = {
+            platforms: {
+                instagram: {
+                    name: "إنستغرام",
+                    logo_bg: "#E4405F",
+                    title: "الأصالة والإبداع البصري",
+                    description: "إنستغرام يكافئ المحتوى الأصلي ويمنح فرصة للمبدعين الصغار. الهدف هو الترفيه والإلهام. خوارزمية Reels هي الأهم للنمو وتعتمد على جودة المحتوى وليس عدد المتابعين.",
+                    signals: {
+                        positive: ["مدة المشاهدة (Reels)", "معدل إكمال الفيديو (Reels)", "المشاركات والحفظ", "التفاعل مع Stories", "المحتوى الأصلي"],
+                        negative: ["المحتوى المعاد نشره (علامات مائية)", "الخطاف الضعيف (أول 3 ثوان)", "جودة فيديو منخفضة"]
+                    },
+                    scores: [4, 5, 4, 3, 5, 2] // Corresponds to chart labels
+                },
+                facebook: {
+                    name: "فيسبوك",
+                    logo_bg: "#1877F2",
+                    title: "المجتمع والمحادثات الهادفة",
+                    description: "الأولوية للمحتوى من الأصدقاء، العائلة، والمجموعات. الخوارزمية تحفز 'التفاعلات الهادفة' مثل التعليقات الطويلة والمحادثات المتبادلة. الفيديو الأصلي والبث المباشر يتفوقان على الروابط الخارجية.",
+                    signals: {
+                        positive: ["التعليقات الطويلة والمحادثات", "التفاعل داخل المجموعات", "البث المباشر والفيديو الأصلي", "تفاعل الأصدقاء والعائلة"],
+                        negative: ["الروابط الخارجية", "طُعم التفاعل (اكتب 'نعم'!)", "المحتوى الترويجي الصريح"]
+                    },
+                    scores: [5, 4, 3, 5, 3, 1]
+                },
+                tiktok: {
+                    name: "تيك توك",
+                    logo_bg: "#000000",
+                    title: "محرك الاكتشاف الفيروسي",
+                    description: "الهدف هو إبقاء المستخدم في حلقة مشاهدة لا نهائية. معدل إكمال الفيديو هو الإشارة الأقوى. الخوارزمية أصبحت تركز على 'التخصصات الدقيقة' والفيديوهات التي تحافظ على انتباه المشاهد لمدة 15-20 ثانية.",
+                    signals: {
+                        positive: ["معدل إكمال الفيديو بالكامل", "إعادة المشاهدة", "المشاركات", "استخدام الأصوات الرائجة", "التخصص الدقيق (Niche)"],
+                        negative: ["تجاوز الفيديو في الثواني الأولى", "محتوى غير أصلي", "عدم الاتساق في المواضيع"]
+                    },
+                    scores: [2, 5, 5, 4, 4, 1]
+                },
+                youtube: {
+                    name: "يوتيوب",
+                    logo_bg: "#FF0000",
+                    title: "الرضا ومدة المشاهدة",
+                    description: "الهدف هو زيادة 'مدة الجلسة' الإجمالية. الخوارزمية توازن بين 'نسبة النقر إلى الظهور' (جاذبية العنوان والصورة المصغرة) و 'متوسط مدة المشاهدة' (جودة المحتوى نفسه).",
+                    signals: {
+                        positive: ["متوسط مدة المشاهدة", "نسبة النقر إلى الظهور (CTR)", "الاشتراكات والتعليقات بعد المشاهدة", "رضا المشاهد (استطلاعات)"],
+                        negative: ["عناوين وصور مضللة", "مقدمات طويلة ومملة", "محتوى لا يظهر خبرة (YMYL)"]
+                    },
+                    scores: [4, 4, 4, 3, 5, 3]
+                },
+                linkedin: {
+                    name: "لينكدإن",
+                    logo_bg: "#0A66C2",
+                    title: "الخبرة والشبكة المهنية",
+                    description: "الخوارزمية مصممة لتعزيز المحتوى الذي يقدم قيمة معرفية ونصائح مهنية. التعليقات التي تضيف قيمة للنقاش أهم من الإعجابات. المحتوى من الملفات الشخصية للأفراد يصل لجمهور أكبر من صفحات الشركات.",
+                    signals: {
+                        positive: ["التعليقات ذات المعنى", "المحتوى من الخبراء (ملفات شخصية)", "وقت المكوث (Dwell time)", "المقالات والصور الدوارة (PDF)"],
+                        negative: ["المحتوى البيعي المباشر", "الروابط في المنشور نفسه (ضعها في أول تعليق)", "المحتوى غير المهني"]
+                    },
+                    scores: [5, 3, 2, 5, 4, 2]
+                },
+                 x: {
+                    name: "إكس (تويتر سابقا)",
+                    logo_bg: "#1DA1F2",
+                    title: "الحداثة والمحادثة الفورية",
+                    description: "المنصة مصممة لإطلاع المستخدمين على آخر الأخبار والمحادثات في الوقت الفعلي. الحداثة هي العامل الأكثر أهمية. الردود وإعادة النشر أقوى من الإعجابات. الوسائط الغنية (صور/فيديو) تجذب انتباهًا أكبر.",
+                    signals: {
+                        positive: ["الحداثة وسرعة النشر", "الردود وإعادة النشر", "استخدام الوسائط (صور/فيديو)", "التغريد المتسق"],
+                        negative: ["الإفراط في استخدام الهاشتاجات", "عدم التفاعل مع الردود", "النشر غير المنتظم"]
+                    },
+                    scores: [3, 4, 1, 4, 2, 5]
+                }
+            },
+            strategy: [
+                {
+                    platform: "لينكدإن",
+                    persona: ["noura"],
+                    pillar: "التميز المهني",
+                    idea: "نشر مقالات عميقة (Articles) عن 'استراتيجيات القيادة في 2025' من حسابات المدربين الشخصية.",
+                    icon: "✍️"
+                },
+                {
+                    platform: "لينكدإن",
+                    persona: ["noura"],
+                    pillar: "التميز المهني",
+                    idea: "إنشاء صور دوارة (PDF Carousels) تلخص 'دورة حياة المشروع في 7 خطوات' لزيادة وقت المكوث.",
+                    icon: "📊"
+                },
+                {
+                    platform: "إنستغرام",
+                    persona: ["ahmed"],
+                    pillar: "بناء المهارات",
+                    idea: "فيديو Reel قصير (30 ثانية) بعنوان '3 أخطاء تقتل ثقتك بنفسك' بخطاف قوي في أول 3 ثوان.",
+                    icon: "🎬"
+                },
+                {
+                    platform: "تيك توك",
+                    persona: ["ahmed", "sara"],
+                    pillar: "رؤى نفسية",
+                    idea: "فيديو (60 ثانية) يشرح 'مبدأ التفكير الكارثي' باستخدام تريند صوتي رائج.",
+                    icon: "🧠"
+                },
+                {
+                    platform: "يوتيوب",
+                    persona: ["sara"],
+                    pillar: "قصص نجاح",
+                    idea: "فيديو طويل (10 دقائق) لمقابلة مع خريجة 'دبلوم الكوتشينج' وكيف غيرت مسارها المهني.",
+                    icon: "🏆"
+                },
+                {
+                    platform: "فيسبوك",
+                    persona: ["sara"],
+                    pillar: "فرص التعلم",
+                    idea: "بث مباشر (Live Q&A) مع خبير للإجابة على أسئلة الجمهور حول 'دبلوم الصحة النفسية'.",
+                    icon: "💬"
+                },
+                {
+                    platform: "إنستغرام",
+                    persona: ["ahmed", "sara"],
+                    pillar: "بناء المهارات",
+                    idea: "استخدام Stories لطرح اختبارات قصيرة (Quiz) عن 'لغة الجسد' لزيادة التفاعل المباشر.",
+                    icon: "❓"
+                },
+                 {
+                    platform: "يوتيوب",
+                    persona: ["sara", "ahmed"],
+                    pillar: "رؤى نفسية",
+                    idea: "نشر فيديو Short عن طريق قص أقوى دقيقة من محاضرة طويلة عن 'العلاج المعرفي السلوكي'.",
+                    icon: "✂️"
+                },
+                 {
+                    platform: "فيسبوك",
+                    persona: ["sara", "noura"],
+                    pillar: "بناء المجتمع",
+                    idea: "إطلاق تحدي شهري في مجموعة فيسبوك الحصرية للطلاب لتطبيق مهارة جديدة.",
+                    icon: "👥"
+                },
+            ]
+        };
+
+        // Navigation
+        const navLinks = document.querySelectorAll('.main-nav-link');
+        const sections = document.querySelectorAll('.app-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                sections.forEach(section => {
+                    if (section.id === sectionId) {
+                        section.classList.remove('content-hidden');
+                    } else {
+                        section.classList.add('content-hidden');
+                    }
+                });
+            });
+        });
+
+        // Platforms Section
+        const platformButtons = document.querySelectorAll('.platform-btn');
+        const platformDetailsContainer = document.getElementById('platform-details');
+        const ctx = document.getElementById('platform-chart').getContext('2d');
+        let platformChart;
+        const chartLabels = ['العلاقة/المجتمع', 'جودة التفاعل', 'اكتشاف المحتوى', 'قوة المحتوى', 'مدة المشاهدة/القيمة', 'الحداثة'];
+
+        function createOrUpdateChart(platformKey) {
+            const platform = data.platforms[platformKey];
+            const chartData = {
+                labels: chartLabels,
+                datasets: [{
+                    label: platform.name,
+                    data: platform.scores,
+                    backgroundColor: 'rgba(74, 144, 226, 0.2)',
+                    borderColor: 'rgba(74, 144, 226, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(74, 144, 226, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(74, 144, 226, 1)'
+                }]
+            };
+
+            if (platformChart) {
+                platformChart.data = chartData;
+                platformChart.update();
+            } else {
+                platformChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                             tooltip: {
+                                rtl: true,
+                                textDirection: 'rtl',
+                                bodyFont: {
+                                    family: 'Cairo'
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                pointLabels: {
+                                    font: {
+                                        size: 11,
+                                        family: 'Cairo',
+                                        weight: 'bold'
+                                    },
+                                    color: '#3D4451'
+                                },
+                                ticks: {
+                                    beginAtZero: true,
+                                    max: 5,
+                                    stepSize: 1,
+                                    backdropColor: 'transparent'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updatePlatformView(platformKey) {
+            const platform = data.platforms[platformKey];
+            platformDetailsContainer.innerHTML = `
+                <h3 class="text-2xl font-bold mb-2 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background-color: ${platform.logo_bg};">${platform.name.substring(0, 2)}</span>
+                    ${platform.name}: ${platform.title}
+                </h3>
+                <p class="text-gray-700 mb-6">${platform.description}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-bold text-green-600 mb-2">✅ إشارات إيجابية</h4>
+                        <ul class="list-none space-y-1">
+                            ${platform.signals.positive.map(signal => `<li class="text-sm text-gray-600">${signal}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-red-600 mb-2">❌ ما يجب تجنبه</h4>
+                        <ul class="list-none space-y-1">
+                            ${platform.signals.negative.map(signal => `<li class="text-sm text-gray-600">${signal}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            createOrUpdateChart(platformKey);
+        }
+
+        platformButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                platformButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const platformKey = button.getAttribute('data-platform');
+                updatePlatformView(platformKey);
+            });
+        });
+        
+        // Strategy Section
+        const personaCards = document.querySelectorAll('.persona-card');
+        const strategyContainer = document.getElementById('strategy-content');
+        let activePersona = null;
+
+        function renderStrategies() {
+            strategyContainer.innerHTML = '';
+            const filteredStrategies = activePersona 
+                ? data.strategy.filter(s => s.persona.includes(activePersona))
+                : data.strategy;
+            
+            filteredStrategies.forEach(s => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl shadow-md transition-all duration-300";
+                card.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="text-3xl">${s.icon}</div>
+                        <div>
+                            <span class="text-xs font-bold uppercase text-white rounded-full px-2 py-1" style="background-color: ${data.platforms[s.platform.toLowerCase()].logo_bg};">${data.platforms[s.platform.toLowerCase()].name}</span>
+                            <p class="mt-2 text-gray-700">${s.idea}</p>
+                        </div>
+                    </div>
+                `;
+                strategyContainer.appendChild(card);
+            });
+        }
+        
+        personaCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const personaId = card.id.replace('persona-', '');
+
+                if (card.classList.contains('active-persona')) {
+                    card.classList.remove('active-persona');
+                    activePersona = null;
+                } else {
+                    personaCards.forEach(c => c.classList.remove('active-persona'));
+                    card.classList.add('active-persona');
+                    activePersona = personaId;
+                }
+                renderStrategies();
+            });
+        });
+        
+        // Initial Load
+        updatePlatformView('instagram');
+        renderStrategies();
+    });
+    </script>
+</body>
+</html>
